@@ -2,13 +2,15 @@
 
 import os
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 from zerotrue import ZeroTrue
-from zerotrue.exceptions import (
-    APIError,
-    AuthenticationError,
-    RateLimitError,
-    ValidationError,
-)
+from zerotrue.exceptions import APIError, AuthenticationError, RateLimitError, ValidationError
 
 client = ZeroTrue(
     api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here"),

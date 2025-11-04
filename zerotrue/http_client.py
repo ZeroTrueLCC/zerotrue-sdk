@@ -5,12 +5,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from zerotrue.exceptions import (
-    APIError,
-    AuthenticationError,
-    RateLimitError,
-    ValidationError,
-)
+from zerotrue.exceptions import APIError, AuthenticationError, RateLimitError, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +33,13 @@ class HTTPClient:
             logging.basicConfig(level=logging.DEBUG)
 
         # Setup httpx client with retry
+        # Не устанавливаем Content-Type по умолчанию, он будет добавляться автоматически при необходимости
         transport = httpx.HTTPTransport(retries=max_retries)
         self.client = httpx.Client(
             transport=transport,
             timeout=self.timeout,
             headers={
                 "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
             },
         )
 
@@ -98,16 +93,18 @@ class HTTPClient:
         """Make HTTP request with retry logic."""
         url = f"{self.base_url}{path}"
 
-        request_headers = self.client.headers.copy()
+        request_headers = dict(self.client.headers)
         if headers:
             request_headers.update(headers)
 
-        # Remove Content-Type header if uploading files (httpx will set it automatically)
-        if files and "Content-Type" in request_headers:
-            del request_headers["Content-Type"]
+        # Устанавливаем Content-Type только для JSON запросов
+        # Для form-data (data) и file uploads httpx установит Content-Type автоматически
+        if json and "Content-Type" not in request_headers:
+            request_headers["Content-Type"] = "application/json"
 
         if self.debug:
             logger.debug(f"{method} {url}")
+            logger.debug(f"Headers: {request_headers}")
             if params:
                 logger.debug(f"Params: {params}")
             if json:
@@ -116,6 +113,7 @@ class HTTPClient:
                 logger.debug(f"Data: {data}")
 
         try:
+            # httpx автоматически использует application/x-www-form-urlencoded для data без files
             response = self.client.request(
                 method=method,
                 url=url,
@@ -170,13 +168,13 @@ class AsyncHTTPClient:
             logging.basicConfig(level=logging.DEBUG)
 
         # Setup httpx async client with retry
+        # Не устанавливаем Content-Type по умолчанию, он будет добавляться автоматически при необходимости
         transport = httpx.AsyncHTTPTransport(retries=max_retries)
         self.client = httpx.AsyncClient(
             transport=transport,
             timeout=self.timeout,
             headers={
                 "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
             },
         )
 
@@ -237,16 +235,18 @@ class AsyncHTTPClient:
         """Make async HTTP request with retry logic."""
         url = f"{self.base_url}{path}"
 
-        request_headers = self.client.headers.copy()
+        request_headers = dict(self.client.headers)
         if headers:
             request_headers.update(headers)
 
-        # Remove Content-Type header if uploading files
-        if files and "Content-Type" in request_headers:
-            del request_headers["Content-Type"]
+        # Устанавливаем Content-Type только для JSON запросов
+        # Для form-data (data) и file uploads httpx установит Content-Type автоматически
+        if json and "Content-Type" not in request_headers:
+            request_headers["Content-Type"] = "application/json"
 
         if self.debug:
             logger.debug(f"{method} {url}")
+            logger.debug(f"Headers: {request_headers}")
             if params:
                 logger.debug(f"Params: {params}")
             if json:
