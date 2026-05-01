@@ -69,19 +69,11 @@ class Checks:
 
         # Используем data вместо json для form-data
         response = self._client.post(endpoint, data=form_data, headers=headers)
-        # Адаптируем ответ API к формату CheckResponse
-        # API возвращает данные в поле 'data', распаковываем их
-        if "data" in response and isinstance(response["data"], dict):
-            # Объединяем верхний уровень с данными из 'data'
+        if "result" in response and isinstance(response["result"], dict):
             adapted_response = {**response}
-            adapted_response.update(response["data"])
-            adapted_response.pop("data", None)
+            adapted_response.update(response["result"])
+            adapted_response.pop("result", None)
             response = adapted_response
-        # Конвертируем вероятности в проценты для совместимости
-        if "ai_probability" in response and isinstance(response["ai_probability"], float):
-            response["ai_probability"] = round(response["ai_probability"] * 100, 2)
-        if "human_probability" in response and isinstance(response["human_probability"], float):
-            response["human_probability"] = round(response["human_probability"] * 100, 2)
         return response  # type: ignore
 
     def create_from_file(
@@ -188,18 +180,11 @@ class Checks:
             data=form_data if form_data else None,
             headers=headers,
         )
-        # Адаптируем ответ API к формату CheckResponse
-        # API возвращает данные в поле 'data', распаковываем их
-        if "data" in response and isinstance(response["data"], dict):
+        if "result" in response and isinstance(response["result"], dict):
             adapted_response = {**response}
-            adapted_response.update(response["data"])
-            adapted_response.pop("data", None)
+            adapted_response.update(response["result"])
+            adapted_response.pop("result", None)
             response = adapted_response
-        # Конвертируем вероятности в проценты для совместимости
-        if "ai_probability" in response and isinstance(response["ai_probability"], float):
-            response["ai_probability"] = round(response["ai_probability"] * 100, 2)
-        if "human_probability" in response and isinstance(response["human_probability"], float):
-            response["human_probability"] = round(response["human_probability"] * 100, 2)
         return response  # type: ignore
 
     def retrieve(self, check_id: str) -> CheckResult:
@@ -217,17 +202,11 @@ class Checks:
             f"/api/v1/result/{check_id}",
             params={"api_key": self._client.api_key},
         )
-        # Адаптируем ответ API - распаковываем данные из 'data'
-        if "data" in response and isinstance(response["data"], dict):
+        if "result" in response and isinstance(response["result"], dict):
             adapted_response = {**response}
-            adapted_response.update(response["data"])
-            adapted_response.pop("data", None)
+            adapted_response.update(response["result"])
+            adapted_response.pop("result", None)
             response = adapted_response
-        # Конвертируем вероятности в проценты для совместимости
-        if "ai_probability" in response and isinstance(response["ai_probability"], float):
-            response["ai_probability"] = round(response["ai_probability"] * 100, 2)
-        if "human_probability" in response and isinstance(response["human_probability"], float):
-            response["human_probability"] = round(response["human_probability"] * 100, 2)
         return response  # type: ignore
 
     def wait(

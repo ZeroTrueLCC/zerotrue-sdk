@@ -59,23 +59,27 @@ class HTTPClient:
 
         if response.status_code == 400:
             error_data = response.json() if response.text else {}
-            raise ValidationError(error_data.get("message", "Validation error") or "Validation error")
+            error_msg = error_data.get("error", {}).get("message", "Validation error") or "Validation error"
+            raise ValidationError(error_msg)
 
         if response.status_code == 401:
             raise AuthenticationError("Invalid API key", status_code=401)
 
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", 60))
+            error_data = response.json() if response.text else {}
+            error_msg = error_data.get("error", {}).get("message", "Rate limit exceeded") or "Rate limit exceeded"
             raise RateLimitError(
-                "Rate limit exceeded",
+                error_msg,
                 retry_after=retry_after,
                 status_code=429,
-                response=response.json() if response.text else {},
+                response=error_data,
             )
 
         error_data = response.json() if response.text else {}
+        error_msg = error_data.get("error", {}).get("message") or f"API error: {response.status_code}"
         raise APIError(
-            error_data.get("message", f"API error: {response.status_code}") or f"API error: {response.status_code}",
+            error_msg,
             status_code=response.status_code,
             response=error_data,
         )
@@ -201,23 +205,27 @@ class AsyncHTTPClient:
 
         if response.status_code == 400:
             error_data = response.json() if response.text else {}
-            raise ValidationError(error_data.get("message", "Validation error") or "Validation error")
+            error_msg = error_data.get("error", {}).get("message", "Validation error") or "Validation error"
+            raise ValidationError(error_msg)
 
         if response.status_code == 401:
             raise AuthenticationError("Invalid API key", status_code=401)
 
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", 60))
+            error_data = response.json() if response.text else {}
+            error_msg = error_data.get("error", {}).get("message", "Rate limit exceeded") or "Rate limit exceeded"
             raise RateLimitError(
-                "Rate limit exceeded",
+                error_msg,
                 retry_after=retry_after,
                 status_code=429,
-                response=response.json() if response.text else {},
+                response=error_data,
             )
 
         error_data = response.json() if response.text else {}
+        error_msg = error_data.get("error", {}).get("message") or f"API error: {response.status_code}"
         raise APIError(
-            error_data.get("message", f"API error: {response.status_code}") or f"API error: {response.status_code}",
+            error_msg,
             status_code=response.status_code,
             response=error_data,
         )
