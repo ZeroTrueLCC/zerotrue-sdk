@@ -4,7 +4,6 @@ import asyncio
 
 from zerotrue import AsyncZeroTrue
 
-
 _API_KEY = "zt_your_api_key_here"
 
 
