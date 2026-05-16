@@ -1,19 +1,9 @@
 """Advanced usage examples for ZeroTrue SDK."""
 
-import os
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
-
 from zerotrue import ZeroTrue
 
 client = ZeroTrue(
-    api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here"),
-    base_url="https://app.zerotrue.app",
+    api_key="zt_your_api_key_here",
     timeout=30000,
     max_retries=3,
     retry_delay=1000,

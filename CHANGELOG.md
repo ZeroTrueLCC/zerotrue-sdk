@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced API response adaptation:
   - Automatically unwraps nested response data from `data` field
   - Converts probability values from 0-1 range to percentages (0-100)
-- Updated examples to support `.env` file loading via `python-dotenv` (optional)
+- Updated examples to pass the API key as a constructor argument (placeholder `zt_your_api_key_here`)
 
 ### Fixed
 - Proper handling of API key in request body for text/URL/file checks

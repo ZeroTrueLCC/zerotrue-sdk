@@ -1,18 +1,9 @@
 """Самый простой пример - БЕЗ idempotencyKey и лишних параметров."""
 
-import os
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
-
 from zerotrue import ZeroTrue
 
 # Инициализация клиента
-client = ZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here"))
+client = ZeroTrue(api_key="zt_your_api_key_here")
 
 # Пример 1: Проверка текста (минимальный код, БЕЗ idempotencyKey)
 result = client.checks.create_and_wait(

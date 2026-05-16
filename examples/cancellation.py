@@ -1,19 +1,11 @@
 """Example of cancelling wait operation using signal."""
 
-import os
 import threading
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
 
 from zerotrue import ZeroTrue
 
 client = ZeroTrue(
-    api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here"),
+    api_key="zt_your_api_key_here",
 )
 
 # Create a cancellation signal (similar to AbortSignal in Node.js)

@@ -1,21 +1,16 @@
 """Parallel async requests example - main advantage of async."""
 
 import asyncio
-import os
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
 
 from zerotrue import AsyncZeroTrue
 
 
+_API_KEY = "zt_your_api_key_here"
+
+
 async def check_multiple_texts():
     """Check multiple texts in parallel."""
-    async with AsyncZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here")) as client:
+    async with AsyncZeroTrue(api_key=_API_KEY) as client:
         texts = [
             "First text to check for AI generation",
             "Second text to analyze",
@@ -47,7 +42,7 @@ async def check_multiple_texts():
 
 async def check_mixed_content():
     """Check text, URLs, and files in parallel."""
-    async with AsyncZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here")) as client:
+    async with AsyncZeroTrue(api_key=_API_KEY) as client:
         # Mix of different check types
         tasks = [
             # Text check
@@ -80,7 +75,7 @@ async def check_mixed_content():
 
 async def check_with_progress():
     """Check multiple items with progress reporting."""
-    async with AsyncZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here")) as client:
+    async with AsyncZeroTrue(api_key=_API_KEY) as client:
         texts = [f"Sample text number {i}" for i in range(10)]
 
         # Create all checks

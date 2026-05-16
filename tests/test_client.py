@@ -21,7 +21,6 @@ def test_client_initialization_with_options():
     """Test client initialization with custom options."""
     client = ZeroTrue(
         api_key="test_key",
-        base_url="https://custom.url",
         timeout=60000,
         max_retries=5,
         retry_delay=2000,

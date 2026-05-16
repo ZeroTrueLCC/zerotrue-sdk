@@ -36,10 +36,9 @@ poetry add zerotrue-sdk
 
 ```python
 from zerotrue import ZeroTrue
-import os
 
 client = ZeroTrue(
-    api_key=os.getenv("ZEROTRUE_API_KEY"),
+    api_key="zt_your_api_key_here",
 )
 
 # Check text for AI generation
@@ -56,10 +55,9 @@ print(f"Result: {result.get('result_type', 'unknown')}")
 ```python
 from zerotrue import AsyncZeroTrue
 import asyncio
-import os
 
 async def main():
-    async with AsyncZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY")) as client:
+    async with AsyncZeroTrue(api_key="zt_your_api_key_here") as client:
         # Check text for AI generation
         result = await client.checks.create_and_wait({
             "input": {"type": "text", "value": "Check this text..."},
@@ -74,7 +72,7 @@ asyncio.run(main())
 
 ```python
 async def check_multiple():
-    async with AsyncZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY")) as client:
+    async with AsyncZeroTrue(api_key="zt_your_api_key_here") as client:
         texts = ["Text 1", "Text 2", "Text 3", "Text 4", "Text 5"]
 
         # All checks run in parallel!
@@ -94,7 +92,6 @@ async def check_multiple():
 ```python
 client = ZeroTrue(
     api_key="zt_your_api_key_here",
-    base_url="https://app.zerotrue.app",  # optional
     timeout=30000,  # 30 seconds (optional)
     max_retries=3,  # retry failed requests (optional)
     retry_delay=1000,  # 1 second between retries (optional)
@@ -243,7 +240,6 @@ Creates a new ZeroTrue client.
 **Options:**
 
 - `api_key` (str, required) - Your ZeroTrue API key
-- `base_url` (str, optional) - API base URL (default: `https://app.zerotrue.app`)
 - `timeout` (int, optional) - Request timeout in ms (default: `30000`)
 - `max_retries` (int, optional) - Max retry attempts (default: `3`)
 - `retry_delay` (int, optional) - Delay between retries in ms (default: `1000`)
@@ -353,13 +349,6 @@ The SDK automatically handles rate limits with retry logic.
 - **Videos:** mp4, mov, avi, mkv, webm
 - **Audio:** mp3, wav, ogg, flac
 - **Code:** py, js, ts, html, css, java, cpp, go, json, txt
-
-## Environment Variables
-
-```bash
-# .env
-ZEROTRUE_API_KEY=zt_your_api_key_here
-```
 
 ## Examples
 

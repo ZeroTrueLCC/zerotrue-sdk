@@ -1,14 +1,6 @@
 """Basic async usage example for ZeroTrue SDK."""
 
 import asyncio
-import os
-
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
 
 from zerotrue import AsyncZeroTrue
 
@@ -16,7 +8,7 @@ from zerotrue import AsyncZeroTrue
 async def main():
     # Initialize async client
     client = AsyncZeroTrue(
-        api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here"),
+        api_key="zt_your_api_key_here",
     )
 
     try:
@@ -50,7 +42,7 @@ async def main():
 
 # Alternative: Using async context manager
 async def main_with_context():
-    async with AsyncZeroTrue(api_key=os.getenv("ZEROTRUE_API_KEY", "zt_your_api_key_here")) as client:
+    async with AsyncZeroTrue(api_key="zt_your_api_key_here") as client:
         result = await client.checks.create_and_wait(
             {
                 "input": {"type": "text", "value": "Check this text..."},

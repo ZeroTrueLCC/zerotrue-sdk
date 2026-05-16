@@ -9,6 +9,19 @@ from zerotrue.exceptions import APIError, AuthenticationError, RateLimitError, V
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_API_BASE_URL = "https://api.zerotrue.app"
+
+
+def _error_body_dict(response: httpx.Response) -> Dict[str, Any]:
+    """Parse JSON error body; empty dict if body is not JSON (e.g. HTML from a wrong host)."""
+    if not response.text:
+        return {}
+    try:
+        data = response.json()
+        return data if isinstance(data, dict) else {}
+    except ValueError:
+        return {}
+
 
 class HTTPClient:
     """Sync HTTP client with retry logic and error handling."""
@@ -16,14 +29,13 @@ class HTTPClient:
     def __init__(
         self,
         api_key: str,
-        base_url: str = "https://app.zerotrue.app",
         timeout: int = 30000,
         max_retries: int = 3,
         retry_delay: int = 1000,
         debug: bool = False,
     ):
         self.api_key = api_key
-        self.base_url = base_url.rstrip("/")
+        self.base_url = DEFAULT_API_BASE_URL.rstrip("/")
         self.timeout = timeout / 1000  # Convert to seconds
         self.max_retries = max_retries
         self.retry_delay = retry_delay / 1000  # Convert to seconds
@@ -58,7 +70,7 @@ class HTTPClient:
             return response.json()
 
         if response.status_code == 400:
-            error_data = response.json() if response.text else {}
+            error_data = _error_body_dict(response)
             error_msg = error_data.get("error", {}).get("message", "Validation error") or "Validation error"
             raise ValidationError(error_msg)
 
@@ -67,7 +79,7 @@ class HTTPClient:
 
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", 60))
-            error_data = response.json() if response.text else {}
+            error_data = _error_body_dict(response)
             error_msg = error_data.get("error", {}).get("message", "Rate limit exceeded") or "Rate limit exceeded"
             raise RateLimitError(
                 error_msg,
@@ -76,7 +88,7 @@ class HTTPClient:
                 response=error_data,
             )
 
-        error_data = response.json() if response.text else {}
+        error_data = _error_body_dict(response)
         error_msg = error_data.get("error", {}).get("message") or f"API error: {response.status_code}"
         raise APIError(
             error_msg,
@@ -155,14 +167,13 @@ class AsyncHTTPClient:
     def __init__(
         self,
         api_key: str,
-        base_url: str = "https://app.zerotrue.app",
         timeout: int = 30000,
         max_retries: int = 3,
         retry_delay: int = 1000,
         debug: bool = False,
     ):
         self.api_key = api_key
-        self.base_url = base_url.rstrip("/")
+        self.base_url = DEFAULT_API_BASE_URL.rstrip("/")
         self.timeout = timeout / 1000  # Convert to seconds
         self.max_retries = max_retries
         self.retry_delay = retry_delay / 1000  # Convert to seconds
@@ -204,7 +215,7 @@ class AsyncHTTPClient:
             return response.json()
 
         if response.status_code == 400:
-            error_data = response.json() if response.text else {}
+            error_data = _error_body_dict(response)
             error_msg = error_data.get("error", {}).get("message", "Validation error") or "Validation error"
             raise ValidationError(error_msg)
 
@@ -213,7 +224,7 @@ class AsyncHTTPClient:
 
         if response.status_code == 429:
             retry_after = int(response.headers.get("Retry-After", 60))
-            error_data = response.json() if response.text else {}
+            error_data = _error_body_dict(response)
             error_msg = error_data.get("error", {}).get("message", "Rate limit exceeded") or "Rate limit exceeded"
             raise RateLimitError(
                 error_msg,
@@ -222,7 +233,7 @@ class AsyncHTTPClient:
                 response=error_data,
             )
 
-        error_data = response.json() if response.text else {}
+        error_data = _error_body_dict(response)
         error_msg = error_data.get("error", {}).get("message") or f"API error: {response.status_code}"
         raise APIError(
             error_msg,
